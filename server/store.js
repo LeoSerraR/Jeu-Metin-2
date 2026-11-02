@@ -25,9 +25,9 @@ function hash(password, salt) { return crypto.scryptSync(password, salt, 32).toS
 
 function getAccount(name) { return db[name.toLowerCase()] || null; }
 
-function createAccount(name, password, kingdom) {
+function createAccount(name, password, kingdom, cls) {
   const salt = crypto.randomBytes(16).toString("hex");
-  const acc = { name, salt, hash: hash(password, salt), kingdom, created: Date.now(), char: null };
+  const acc = { name, salt, hash: hash(password, salt), kingdom, cls, created: Date.now(), char: null };
   db[name.toLowerCase()] = acc;
   dirty = true;
   return acc;

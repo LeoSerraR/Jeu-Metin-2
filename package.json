@@ -1,11 +1,12 @@
 {
   "name": "lames-de-jade",
-  "version": "0.1.0",
-  "description": "Lames de Jade - MMORPG 2D isométrique multijoueur, jouable sur PC et mobile dans le navigateur",
+  "version": "0.2.0",
+  "description": "Lames de Jade - MMORPG 3D multijoueur jouable dans le navigateur sur PC et mobile",
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",
-    "test": "node tests/bots.js"
+    "test": "node tests/bots.js",
+    "test:donjons": "node tests/donjons.js"
   },
   "engines": {
     "node": ">=18"
@@ -14,7 +15,8 @@
   "private": true,
   "dependencies": {
     "express": "^4.22.3",
-    "socket.io": "^4.8.4"
+    "socket.io": "^4.8.4",
+    "three": "^0.170.0"
   },
   "devDependencies": {
     "socket.io-client": "^4.8.4"

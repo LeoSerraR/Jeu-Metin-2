@@ -11,17 +11,24 @@ Quand une étape est terminée, ajouter une ligne dans le journal en bas de ce f
 - [x] Butin, inventaire, équipement, forge +9, boutique
 - [x] Interface PC + mobile, mini-carte, chat
 
-## Version 0.2 — Jouer à distance
+## Version 0.2 — 3D, classes et donjons ✅
+- [x] Rendu 3D (Three.js) avec caméra libre, souris et tactile
+- [x] Modèles 3D animés : 4 classes, monstres, boss, décor
+- [x] 4 classes : Lame, Ombre, Mystique, Chaman — 6 compétences chacune
+- [x] 3 donjons à concepts différents (salles scellées, sceaux, contre-la-montre)
+- [x] Boss à patterns annoncés au sol, armes exclusives de boss
+
+## Version 0.3 — Jouer à distance
 - [ ] Hébergement en ligne gratuit (Render ou équivalent) pour jouer avec des amis partout
 - [ ] Sauvegarde dans une base de données gratuite (le disque des hébergeurs gratuits s'efface)
 - [ ] Reconnexion automatique après une coupure réseau
 - [ ] Écran de chargement et page « hors ligne »
 
-## Version 0.3 — Les classes
-- [ ] Classe **Ombre** (dagues, esquive, poison)
-- [ ] Classe **Mystique** (épée et magie noire)
-- [ ] Classe **Chaman** (soins, bénédictions, foudre)
-- [ ] Choix de la classe à la création, sprites et compétences propres
+## Version 0.3b — Équilibrage et finitions 3D
+- [ ] Faire tester les donjons par de vrais joueurs aux niveaux 8, 13, 18 et ajuster les dégâts
+- [ ] Icônes de compétences dessinées (remplacer les emojis)
+- [ ] Modèles 3D importés depuis un pack libre de droits (si fourni)
+- [ ] Murs de donjon qui deviennent transparents entre la caméra et le joueur
 
 ## Version 0.4 — Jouer ensemble
 - [ ] Groupes (jusqu'à 5) avec partage d'expérience
@@ -36,8 +43,8 @@ Quand une étape est terminée, ajouter une ligne dans le journal en bas de ce f
 
 ## Version 0.6 — Aventure
 - [ ] Quêtes (chasse, collecte, livraison) avec récompenses
-- [ ] Premier donjon instancié et son boss
 - [ ] Boss du monde (apparition annoncée)
+- [ ] Donjons supplémentaires
 - [ ] Monture
 
 ## Version 0.7 — Finition
@@ -48,3 +55,4 @@ Quand une étape est terminée, ajouter une ligne dans le journal en bas de ce f
 
 ## Journal
 - 2026-11-02 — v0.1 : première version jouable (serveur, carte, Lame, monstres, pierres, forge, boutique, PC + mobile).
+- 2026-11-02 — v0.2 : passage en 3D avec caméra libre, 4 classes et 24 compétences, 3 donjons, boss à patterns, armes exclusives.

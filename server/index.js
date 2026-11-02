@@ -10,6 +10,8 @@ const store = require("./store");
 const PORT = process.env.PORT || 3000;
 const app = express();
 app.use(express.static(path.join(__dirname, "..", "client")));
+app.use("/vendor/three", express.static(path.join(__dirname, "..", "node_modules", "three", "build"), { maxAge: "7d" }));
+app.use("/vendor/jsm", express.static(path.join(__dirname, "..", "node_modules", "three", "examples", "jsm"), { maxAge: "7d" }));
 app.get("/sante", (req, res) => res.json({ ok: true, joueurs: game.players.size }));
 
 const server = http.createServer(app);
@@ -34,12 +36,13 @@ io.on("connection", (socket) => {
     const name = String((data && data.name) || "").trim();
     const password = String((data && data.password) || "");
     const kingdom = Math.max(0, Math.min(2, Math.floor(+(data && data.kingdom) || 0)));
+    const cls = ["lame", "ombre", "mystique", "chaman"].includes(data && data.cls) ? data.cls : "lame";
     if (!NAME_RE.test(name)) return cb({ ok: false, error: "Nom invalide (3 à 14 lettres ou chiffres)." });
     if (password.length < 4 || password.length > 64) return cb({ ok: false, error: "Mot de passe : 4 caractères minimum." });
     let acc = store.getAccount(name);
     if (!acc) {
       if (data.mode !== "create") return cb({ ok: false, error: "Ce personnage n'existe pas. Créez-le d'abord." });
-      acc = store.createAccount(name, password, kingdom);
+      acc = store.createAccount(name, password, kingdom, cls);
       store.save();
     } else {
       if (data.mode === "create") return cb({ ok: false, error: "Ce nom est déjà pris." });
@@ -65,6 +68,8 @@ io.on("connection", (socket) => {
   on("upgrade", (p, d) => game.onUpgrade(p, d));
   on("chat", (p, d) => game.onChat(p, d));
   on("respawn", (p) => game.onRespawn(p));
+  on("enter", (p, d) => game.onEnter(p, d));
+  on("exit", (p) => game.onExit(p));
 
   socket.on("disconnect", () => { if (socket.player) game.leave(socket.player); });
 });

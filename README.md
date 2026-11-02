@@ -1,8 +1,8 @@
 # ⚔ Lames de Jade
 
-Un MMORPG 2D isométrique multijoueur, jouable dans le navigateur sur **PC et mobile**.
-Univers original d'arts martiaux : trois royaumes, des **Pierres maudites** qui tombent du ciel,
-du combat en temps réel, du butin et une forge où l'on améliore son équipement de +0 à +9.
+Un MMORPG **3D** multijoueur, jouable dans le navigateur sur **PC et mobile**, avec caméra libre.
+Univers original d'arts martiaux : trois royaumes, quatre classes, des **Pierres maudites** qui tombent du ciel,
+des **donjons** aux boss à patterns, du butin et une forge où l'on améliore son équipement de +0 à +9.
 
 ## Lancer le jeu sur ton ordinateur
 
@@ -29,27 +29,40 @@ il faudra héberger le serveur en ligne (prévu dans la feuille de route).
 | Action | PC | Mobile |
 |---|---|---|
 | Se déplacer | Clic gauche (maintenir pour suivre la souris), ZQSD ou flèches | Joystick |
-| Attaquer | Clic sur un monstre, ou Espace (cible la plus proche) | Bouton ⚔ |
-| Compétences | 1, 2, 3 | Boutons 🌀 🐯 📯 |
-| Potions | 4 (rouge), 5 (bleue) | Boutons potions |
+| Tourner la caméra | Clic droit maintenu, ou A / E | Glisser un doigt sur l'écran |
+| Zoom | Molette | Pincer à deux doigts |
+| Attaquer | Clic sur un monstre, ou Espace | Bouton d'attaque |
+| Compétences | 1 à 6 | Boutons de compétences |
+| Potions | F1 / F2 (ou 7 / 8) | Boutons potions |
 | Inventaire | I | Bouton 🎒 |
 | Cibler le plus proche | Tab | — |
 | Discuter | Entrée | Bouton 💬 |
-| Parler à un PNJ | Clic dessus | Toucher |
+| Parler, entrer dans un donjon | Clic sur le PNJ ou le portail | Toucher |
 
-Commandes de chat : `/aide`, `/joueurs`, `/pos`.
+Commandes de chat : `/aide`, `/joueurs`, `/pos`, `/quitter` (sortir d'un donjon).
 
-## Contenu de la version 0.1
+## Les 4 classes (6 compétences chacune)
 
-- Carte de 96 × 96 cases : village, Plaine des Loups, Collines Venteuses, Forêt des Bandits, Vallée des Spectres
-- Classe **Lame** (guerrier) avec 3 compétences : Tourbillon d'acier, Frappe du Tigre, Cri de guerre
-- 6 types de monstres avec IA (errance, agressivité, appel à l'aide, retour au point de départ)
-- 2 types de **Pierres maudites** qui invoquent des vagues de monstres
-- Butin au sol, réservé 15 s à celui qui a fait le plus de dégâts
-- 30 niveaux, 15 équipements, potions, matériaux
-- **Forge** +0 à +9 avec risque d'échec, **boutique**, revente du butin
-- Comptes protégés par mot de passe, sauvegarde automatique
-- Chat global, mini-carte, effets visuels, interface adaptée au tactile
+| Classe | Arme | Style |
+|---|---|---|
+| **Lame** | Épée | Guerrier solide, frappe plusieurs ennemis, charge, cri de guerre, séisme |
+| **Ombre** | Dagues | Assassin rapide : critiques, poison, ruée, voile de brume, mille entailles |
+| **Mystique** | Épée | Lame et magie noire : flammes, drain de vie, terreur, éclipse |
+| **Chaman** | Éventail | À distance : foudre en chaîne, soins de groupe, bénédiction, bouclier, dragon de foudre |
+
+Compétences débloquées aux niveaux 1, 3, 6, 10, 15 et 20.
+
+## Les 3 donjons
+
+| Donjon | Niveau | Concept | Boss |
+|---|---|---|---|
+| **Tour des Mille Lanternes** | 8 | 4 salles scellées : chaque grille ne s'ouvre que quand la salle est vidée | Gardien de Bronze : écrasement, charge en ligne, pluie de lanternes, onde de choc |
+| **Nid de la Reine Tisseuse** | 13 | La reine est invulnérable tant que 4 Sceaux de soie tiennent | Reine Tisseuse : crachat venimeux en cône, toiles qui ralentissent, bond, ponte |
+| **Temple du Dragon de Jade** | 18 | Contre-la-montre de 12 minutes, boss en 3 phases | Dragon de Jade : souffle, coup de queue, envol et pluie de météores, tempête en anneau |
+
+Les attaques des boss sont **annoncées au sol par des zones rouges** qui se remplissent : il faut en sortir à temps
+(pour l'onde de choc et la tempête, la zone sûre est collée au boss). Chaque boss donne une **arme exclusive**
+introuvable ailleurs. Jusqu'à 5 joueurs entrés dans les 3 minutes partagent la même instance.
 
 ## Structure du projet
 
@@ -60,9 +73,11 @@ server/        Serveur Node.js (règles du jeu, multijoueur)
   game.js      Logique du monde
   index.js     Démarrage, connexions
 client/        Ce qui s'affiche dans le navigateur
-  js/art.js    Graphismes dessinés par le code
-  js/main.js   Affichage, commandes, interface
-tests/bots.js  Test automatique avec deux joueurs-robots (npm test, serveur lancé)
+  js/models.js Modèles 3D et animations
+  js/main.js   Rendu 3D (Three.js), caméra, commandes, interface
+  js/art.js    Icônes des objets
+tests/bots.js     Test : deux joueurs-robots chassent dans le monde (npm test)
+tests/donjons.js  Test : un robot traverse un donjon et bat le boss
 ROADMAP.md     Feuille de route
 ```
 

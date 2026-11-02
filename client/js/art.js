@@ -402,13 +402,47 @@ Art.icon = function (key, items, size = 40) {
   const ck = key + size;
   if (Art.iconCache[ck]) return Art.iconCache[ck];
   const it = items[key] || { icon: "gold" };
+  const iconName = it.icon || (it.type === "weapon" ? it.wtype : it.type === "armor" ? "armor" : it.type === "helmet" ? "helmet"
+    : key === "potion_bleue" ? "potion_b" : key === "grande_potion" ? "potion_R" : it.type === "potion" ? "potion_r"
+    : key === "pierre_forge" ? "ore" : key === "croc_loup" ? "fang" : key === "defense_sanglier" ? "tusk" : key === "bandeau_bandit" ? "cloth"
+    : key === "ectoplasme" ? "ecto" : key === "rouage_bronze" ? "gear" : key === "soie_araignee" ? "silk" : key === "ecaille_jade" ? "scale" : "gold");
   const c = mk(size, size), g = c.getContext("2d");
   g.scale(size / 40, size / 40);
-  const tierCol = ["#999", "#c9a96b", "#c8ccd2", "#e8edf5", "#5fe0a8"][it.tier || 0];
-  switch (it.icon) {
+  const tierCol = ["#999", "#c9a96b", "#c8ccd2", "#e8edf5", "#5fe0a8", "#ffb347", "#7cffc8"][it.tier || 0];
+  if (it.unique) { const gr = g.createRadialGradient(20, 20, 2, 20, 20, 20); gr.addColorStop(0, "rgba(255,179,71,0.55)"); gr.addColorStop(1, "rgba(255,179,71,0)"); g.fillStyle = gr; g.fillRect(0, 0, 40, 40); }
+  switch (iconName) {
+    case "dagger":
+      for (const off of [-5, 5]) {
+        g.save(); g.translate(20 + off, 21); g.rotate(-Math.PI / 4 + off * 0.06);
+        if (it.tier >= 4) { g.shadowColor = tierCol; g.shadowBlur = 6; }
+        g.fillStyle = tierCol; g.beginPath(); g.moveTo(-2, -12); g.lineTo(0, -15); g.lineTo(2, -12); g.lineTo(2, 3); g.lineTo(-2, 3); g.fill();
+        g.shadowBlur = 0; g.fillStyle = "#8d949e"; g.fillRect(-5, 3, 10, 2); g.fillStyle = "#2a1a10"; g.fillRect(-1.5, 5, 3, 7);
+        g.restore();
+      }
+      break;
+    case "fan":
+      if (it.tier >= 4) { g.shadowColor = tierCol; g.shadowBlur = 8; }
+      g.fillStyle = tierCol; g.beginPath(); g.moveTo(20, 32); g.arc(20, 32, 22, Math.PI * 1.15, Math.PI * 1.85); g.closePath(); g.fill();
+      g.shadowBlur = 0; g.strokeStyle = "#3a2618"; g.lineWidth = 1.2;
+      for (let i = 0; i <= 6; i++) { const a = Math.PI * 1.15 + (i / 6) * Math.PI * 0.7; g.beginPath(); g.moveTo(20, 32); g.lineTo(20 + Math.cos(a) * 22, 32 + Math.sin(a) * 22); g.stroke(); }
+      g.fillStyle = "#e8534a"; g.beginPath(); g.arc(20, 32, 2.5, 0, 7); g.fill();
+      break;
+    case "gear":
+      g.fillStyle = "#b0793a"; g.beginPath(); g.arc(20, 20, 11, 0, 7); g.fill();
+      for (let i = 0; i < 8; i++) { g.save(); g.translate(20, 20); g.rotate(i * Math.PI / 4); g.fillRect(-2.5, -15, 5, 6); g.restore(); }
+      g.fillStyle = "#4a2f1c"; g.beginPath(); g.arc(20, 20, 4, 0, 7); g.fill();
+      break;
+    case "silk":
+      g.fillStyle = "#efe8f6"; g.beginPath(); g.ellipse(20, 22, 12, 9, 0.3, 0, 7); g.fill();
+      g.strokeStyle = "#c86bff"; g.lineWidth = 1; for (let i = 0; i < 4; i++) { g.beginPath(); g.ellipse(20, 22, 12 - i * 3, 9 - i * 2, 0.3, 0, 7); g.stroke(); }
+      break;
+    case "scale":
+      g.fillStyle = "#2fbf8f"; g.beginPath(); g.moveTo(20, 6); g.quadraticCurveTo(36, 20, 20, 34); g.quadraticCurveTo(4, 20, 20, 6); g.fill();
+      g.fillStyle = "rgba(255,255,255,0.35)"; g.beginPath(); g.ellipse(16, 16, 3, 6, 0.4, 0, 7); g.fill();
+      break;
     case "sword":
       g.translate(20, 20); g.rotate(-Math.PI / 4);
-      if (it.tier === 4) { g.shadowColor = tierCol; g.shadowBlur = 8; }
+      if (it.tier >= 4) { g.shadowColor = tierCol; g.shadowBlur = 8; }
       g.fillStyle = tierCol; g.beginPath(); g.moveTo(-2.5, -16); g.lineTo(0, -19); g.lineTo(2.5, -16); g.lineTo(2.5, 6); g.lineTo(-2.5, 6); g.fill();
       g.shadowBlur = 0;
       g.fillStyle = "#f2c14e"; g.fillRect(-7, 6, 14, 3);
@@ -425,7 +459,7 @@ Art.icon = function (key, items, size = 40) {
       else { g.fillStyle = it.tier === 2 ? "#8d949e" : "#b8862e"; g.beginPath(); g.arc(20, 24, 12, Math.PI, 0); g.fill(); g.fillRect(6, 23, 28, 5); if (it.tier === 3) { g.fillStyle = "#e8534a"; g.beginPath(); g.moveTo(17, 12); g.lineTo(20, 2); g.lineTo(23, 12); g.fill(); } }
       break;
     case "potion_r": case "potion_R": case "potion_b": {
-      const col = it.icon === "potion_b" ? "#3f7fe8" : "#e03a3a", big = it.icon === "potion_R";
+      const col = iconName === "potion_b" ? "#3f7fe8" : "#e03a3a", big = iconName === "potion_R";
       g.fillStyle = "#e6e6e6"; g.fillRect(16, 6, 8, 6);
       g.fillStyle = "#8a5a2b"; g.fillRect(15, 4, 10, 4);
       g.fillStyle = col; g.beginPath(); g.arc(20, 24, big ? 13 : 10, 0, 7); g.fill();

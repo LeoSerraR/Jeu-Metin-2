@@ -7,13 +7,17 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Lames de Jade</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Cpath d=%22M6 26 24 4l2 2L8 28z%22 fill=%22%235fe0a8%22/%3E%3Cpath d=%22M5 21l6 6-2 2-6-6z%22 fill=%22%23e9c46a%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Cpath d=%22M6 26 24 4l2 2L8 28z%22 fill=%22%235fe0a8%22/%3E%3Cpath d=%22M5 21l6 6-2 2-6-6z%22 fill=%22%23e9c46a%22/%3E%3C/svg%3E">
 <link rel="stylesheet" href="css/style.css">
+<script type="importmap">
+{ "imports": { "three": "/vendor/three/three.module.min.js", "three/addons/": "/vendor/jsm/" } }
+</script>
 </head>
 <body>
 <canvas id="game"></canvas>
+<canvas id="overlay"></canvas>
 
 <!-- Écran de connexion -->
 <div id="login" class="screen">
@@ -27,7 +31,14 @@
     <form id="login-form" autocomplete="on">
       <label>Nom du personnage<input id="l-name" name="username" maxlength="14" autocomplete="username" required></label>
       <label>Mot de passe<input id="l-pass" name="password" type="password" maxlength="64" autocomplete="current-password" required></label>
-      <div id="kingdom-pick" class="hidden">
+      <div id="create-extra" class="hidden">
+        <span class="label">Choisis ta classe</span>
+        <div class="classes">
+          <button type="button" class="cl selected" data-c="lame"><b>⚔ Lame</b><small>Guerrier robuste, frappe en zone</small></button>
+          <button type="button" class="cl" data-c="ombre"><b>🗡 Ombre</b><small>Assassin rapide, critiques et poisons</small></button>
+          <button type="button" class="cl" data-c="mystique"><b>🌑 Mystique</b><small>Épée et magie noire</small></button>
+          <button type="button" class="cl" data-c="chaman"><b>⚡ Chaman</b><small>Foudre à distance, soins</small></button>
+        </div>
         <span class="label">Choisis ton royaume</span>
         <div class="kingdoms">
           <button type="button" class="kd selected" data-k="0" style="--kc:#e8534a"><b>Aube</b><small>Royaume rouge</small></button>
@@ -38,7 +49,7 @@
       <button type="submit" class="btn-primary" id="l-submit">Entrer dans le monde</button>
       <p id="l-error" class="error"></p>
     </form>
-    <p class="hint">PC : clic pour se déplacer et attaquer · Mobile : joystick et boutons</p>
+    <p class="hint">PC : clic gauche pour agir, clic droit maintenu pour tourner la caméra · Mobile : joystick, glisser pour tourner</p>
   </div>
 </div>
 
@@ -46,12 +57,13 @@
 <div id="hud" class="hidden">
   <div id="status">
     <div class="st-top"><span id="st-name"></span><span id="st-lvl"></span></div>
-    <div class="bar hp"><div id="bar-hp"></div><span id="txt-hp"></span></div>
+    <div class="bar hp"><div id="bar-hp"></div><div id="bar-shield"></div><span id="txt-hp"></span></div>
     <div class="bar mp"><div id="bar-mp"></div><span id="txt-mp"></span></div>
-    <div id="st-buff" class="hidden">⚔ Cri de guerre</div>
+    <div id="st-effects"></div>
   </div>
   <div id="minimap-wrap"><canvas id="minimap" width="150" height="150"></canvas><div id="zone-name"></div></div>
-  <div id="target-frame" class="hidden"><span id="tg-name"></span><div class="bar tg"><div id="bar-tg"></div></div></div>
+  <div id="target-frame" class="hidden"><span id="tg-name"></span><div class="bar tg"><div id="bar-tg"></div></div><div id="tg-cast"></div></div>
+  <div id="dungeon-panel" class="hidden"><b id="dg-name"></b><span id="dg-obj"></span><span id="dg-time"></span></div>
 
   <div id="toasts"></div>
 
@@ -62,17 +74,16 @@
 
   <div id="hotbar">
     <button class="hb" id="hb-atk" title="Attaque (Espace)"><span class="ico">⚔</span><kbd>Espace</kbd></button>
-    <button class="hb skill" data-n="1" title="Tourbillon d'acier (1)"><span class="ico">🌀</span><kbd>1</kbd><div class="cd"></div><div class="lock"></div></button>
-    <button class="hb skill" data-n="2" title="Frappe du Tigre (2)"><span class="ico">🐯</span><kbd>2</kbd><div class="cd"></div><div class="lock"></div></button>
-    <button class="hb skill" data-n="3" title="Cri de guerre (3)"><span class="ico">📯</span><kbd>3</kbd><div class="cd"></div><div class="lock"></div></button>
-    <button class="hb pot" data-key="potion_rouge" title="Potion rouge (4)"><canvas width="32" height="32"></canvas><kbd>4</kbd><em></em></button>
-    <button class="hb pot" data-key="potion_bleue" title="Potion bleue (5)"><canvas width="32" height="32"></canvas><kbd>5</kbd><em></em></button>
+    <div id="skillbar"></div>
+    <button class="hb pot" data-key="potion_rouge" title="Potion rouge (F1 ou 7)"><canvas width="32" height="32"></canvas><kbd>F1</kbd><em></em></button>
+    <button class="hb pot" data-key="potion_bleue" title="Potion bleue (F2 ou 8)"><canvas width="32" height="32"></canvas><kbd>F2</kbd><em></em></button>
     <button class="hb" id="hb-inv" title="Inventaire (I)"><span class="ico">🎒</span><kbd>I</kbd></button>
   </div>
 
   <div id="xpbar"><div id="bar-xp"></div><span id="txt-xp"></span></div>
   <div id="joystick"><div id="stick"></div></div>
   <button id="chat-toggle" class="mobile-only">💬</button>
+  <button id="cam-reset" title="Recentrer la caméra">🧭</button>
 </div>
 
 <!-- Fenêtres -->
@@ -112,16 +123,17 @@
 <div id="death" class="screen hidden">
   <div class="death-card">
     <h2>Vous êtes tombé au combat</h2>
-    <button id="btn-respawn" class="btn-primary" disabled>Revenir au village</button>
+    <button id="btn-respawn" class="btn-primary" disabled>Revenir</button>
   </div>
 </div>
 
 <div id="tooltip" class="hidden"></div>
 <div id="disconnected" class="screen hidden"><div class="death-card"><h2>Connexion perdue</h2><p id="dc-reason"></p><button class="btn-primary" onclick="location.reload()">Se reconnecter</button></div></div>
+<div id="loading" class="screen hidden"><div class="death-card"><h2 style="color:var(--gold)">Chargement du monde…</h2></div></div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="js/path.js"></script>
 <script src="js/art.js"></script>
-<script src="js/main.js"></script>
+<script type="module" src="js/main.js"></script>
 </body>
 </html>
